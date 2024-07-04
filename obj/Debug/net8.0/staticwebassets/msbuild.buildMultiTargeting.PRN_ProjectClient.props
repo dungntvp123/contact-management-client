@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\PRN_ProjectClient.props" />
+</Project>

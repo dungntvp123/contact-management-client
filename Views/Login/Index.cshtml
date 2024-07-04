@@ -1,0 +1,111 @@
+﻿@{
+	Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Login</title>
+	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/PRN_ProjectClient.styles.css" asp-append-version="true" />
+	<style>
+		body{
+			overflow: hidden;
+		}
+		.main-content {
+			height: 100vh;
+			width: 100vw;
+			background-color: #e3e3e3;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+		.form-content {
+			height: 50%;
+			width: 25%;
+			background-color: white;
+		}
+		.login-form {
+			height: 100%;
+			width: 100%;
+			display: flex;
+			flex-direction: column;
+			gap: 18px;
+			justify-content: flex-start;
+			margin-top: 68px;
+		}
+		.login-element {
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			padding: 0px 18px;
+		}
+		input, button {
+			height: 48px;
+			width: auto;
+		}
+		
+		button {
+			margin-top: 68px;
+		}
+
+	</style>
+</head>
+<body>
+	<div class="main-content">
+		<div class="form-content">
+			<form class="login-form" id="login-form">
+				<div class="login-element">
+					<input id="phone-number" type="text" name="PhoneNunber" placeholder="Phone Number" />
+				</div>
+				<div class="login-element">
+					<input id="password" type="password" name="Password" placeholder="Password" />
+				</div>
+				<div class="login-element">
+					<button class="login-btn" id="login-btn">Continue</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</body>
+<script>
+	document.getElementById("login-btn").addEventListener('click', (e) => {
+		e.preventDefault();
+		const form = document.getElementById('login-form');
+		var formData = new FormData(form);
+
+		fetch("https://localhost:7167/api/Auth/Authenticate", {
+			method: "POST",
+			mode: "cors",
+			cache: "no-cache",
+			credentials: "same-origin",
+			body: formData,
+			redirect: "follow",
+			referrerPolicy: "no-referrer",
+		})
+			.then(response => {
+				if (response.status == 401) {
+					alert("Password incorrect");
+					return null;
+				}
+				return response.json();
+			})
+			.then(data => {
+				if (!data) {
+					return;
+				}
+				setCookie("token", data.token, 15);
+				window.location.href = "Home";
+			});
+	});
+
+	function setCookie(name, value, minutes) {
+		const date = new Date();
+		date.setTime(date.getTime() + (minutes * 60 * 1000));
+		const expires = "expires=" + date.toUTCString();
+		document.cookie = name + "=" + value + ";" + expires + ";path=/";
+	}
+</script>
+</html>
